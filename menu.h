@@ -1,6 +1,5 @@
-#include <stdio.h>
-using std::cin;
-using std::cout;
+#ifndef MENU_H
+#define MENU_H
 
 int menuOption(int choices)
 {
@@ -19,3 +18,5 @@ int menuOption(int choices)
     }
     return choice;
 }
+
+#endif

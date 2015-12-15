@@ -5,6 +5,10 @@ using std::endl;
 using std::cerr;
 using std::string;
 
+#include <mysql++.h>
+//define db connection credentials in dbconn.h (not included)
+#include "dbconn.h"
+
 #include "diceRolls.h"
 #include "menu.h"
 // function prototypes:
@@ -66,6 +70,7 @@ int main()
 
 void genCombat()
 {
+
     int targetCR=0;
     int env=0;
     int xpBudget=0;
@@ -76,13 +81,38 @@ void genCombat()
     
 
     cout <<"What environment will the encounter be in?" << endl; 
-    cout <<"(1) Dungeon " << endl; 
-    cout <<"(2) Forest " << endl; 
-    cout <<"(3) Swamp " << endl; 
-    cout <<"(4) Mountain " << endl; 
-    cout <<"(5) Desert " << endl; 
-    cout <<"(6) City " << endl; 
-    env = menuOption(6); 
+    cout <<"(1) Don't care / random " << endl;
+    cout <<"(2) Dungeon " << endl; 
+    cout <<"(3) Forest " << endl; 
+    cout <<"(4) Swamp " << endl; 
+    cout <<"(5) Mountain " << endl; 
+    cout <<"(6) Desert " << endl; 
+    cout <<"(7) City " << endl; 
+    env = menuOption(7); 
+
+// The idea is to pull a list of entries from the database that meet the 
+//   CR and environment requirements set above
+    mysqlpp::Connection conn(false);
+    if (conn.connect( DBNAME,DBHOST,DBUSER,DBPASS,DBPORT)) 
+    {
+        cout << "DB connection succeeded" << endl; 
+        mysqlpp::Query query = conn.query("select * from `monsters` where `groups` like '%goblin%'");
+        mysqlpp::StoreQueryResult res = query.store();
+        if (res) 
+        {
+        }
+        else
+        {
+            cout << "Query failed" << endl ; 
+            cout << query.error() << endl ; 
+        }
+    }
+    else
+    {
+        cout << "DB connection failed:  " << endl; 
+        cout << conn.error() << endl; 
+    }
+
 
 }
 

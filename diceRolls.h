@@ -1,5 +1,5 @@
-#include <stdlib.h>
-#include <time.h>
+#ifndef DICEROLLS_H
+#define DICEROLLS_h
 
 int rollD();
 
@@ -19,3 +19,5 @@ int rollD(int faces, int dice=1, int modifier=0)
     totalRoll += modifier; 
     return totalRoll;
 }
+
+#endif
