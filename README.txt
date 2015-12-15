@@ -5,12 +5,12 @@ a c++ compiler such as g++
 mysql libraries for C++ such as libmysql++3
 
 compiling looks like this: 
-gloom@green:~/Code/pathf$ g++ dungeonmaster.cpp -I/usr/include/mysql++/ -I/usr/include/mysql/ -lmysqlpp -o dm.out
+user@server:~/pathfinder-game-utils$ g++ dungeonmaster.cpp -I/usr/include/mysql++/ -I/usr/include/mysql/ -lmysqlpp -o dm.out
 
 
 reads bestiary and trap information from a database with these tables: : 
 
-MariaDB [pathf_DB]> describe monsters;
+MariaDB [pf-utils-db]> describe monsters;
 +------------------+-------------+------+-----+---------+-------+
 | Field            | Type        | Null | Key | Default | Extra |
 +------------------+-------------+------+-----+---------+-------+
@@ -22,7 +22,7 @@ MariaDB [pathf_DB]> describe monsters;
 | groups           | varchar(30) | YES  |     | NULL    |       |
 +------------------+-------------+------+-----+---------+-------+
 
-MariaDB [pathf_DB]> describe traps;
+MariaDB [pf-utils-db]> describe traps;
 +--------------+-------------+------+-----+---------+-------+
 | Field        | Type        | Null | Key | Default | Extra |
 +--------------+-------------+------+-----+---------+-------+
@@ -41,13 +41,13 @@ MariaDB [pathf_DB]> describe traps;
 - Populating -
 --------------
 
-MariaDB [pathf_DB]> INSERT INTO traps VALUES ('Fireball Trap', 5, 1600, 28, 28);
+MariaDB [pf-utils-db]> INSERT INTO traps VALUES ('Fireball Trap', 5, 1600, 28, 28);
 
 -------------
 - Selecting -
 ------------- 
 
-MariaDB [pathf_DB]> select * from traps where CR <= 1;
+MariaDB [pf-utils-db]> select * from traps where CR <= 1;
 
-MariaDB [pathf_DB]> select * from `monsters` where `groups` like '%goblin%';
+MariaDB [pf-utils-db]> select * from `monsters` where `groups` like '%goblin%';
 
