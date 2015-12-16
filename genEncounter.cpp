@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdio.h>
 using std::string; 
 using std::cout;
 using std::endl;
@@ -38,13 +39,32 @@ void genEncounter()
     cout <<"(6) Desert " << endl;
     cout <<"(7) City " << endl;
     env = menuOption(7);
+    string envString="";
+    if (env == 1)
+        env = rollD(6,1) + 1 ;
+    if (env == 2)
+        envString = "Dungeon";
+    if (env == 3)
+        envString = "Forest";
+    if (env == 4)
+        envString = "Swamp";
+    if (env == 5)
+        envString = "Mountain";
+    if (env == 6)
+        envString = "Desert";
+    if (env == 7)
+        envString = "City";
+    
+    string crString = std::to_string (targetCR) ;
+    string grabAllQuery = "SELECT * FROM `monsters` WHERE `CR` <= " +
+        crString + " AND `environment` like '%" + envString + "%' " ; 
 
 // The idea is to pull a list of entries from the database that meet the 
 //   CR and environment requirements set above
     mysqlpp::Connection conn(false);
     if (conn.connect( DBNAME,DBHOST,DBUSER,DBPASS,DBPORT))
     {
-        mysqlpp::Query query = conn.query("select * from `monsters` where `groups` like '%goblin%'");
+        mysqlpp::Query query = conn.query(grabAllQuery);
         mysqlpp::StoreQueryResult res = query.store();
         if (res)
         {
@@ -53,7 +73,7 @@ void genEncounter()
             for (it=res.begin(); it != res.end(); ++it)
             {
                 mysqlpp::Row row = *it;
-                cout << '\t' << row[1] <<endl ;
+                cout << '\t' << row[0] <<endl ;
 
             }
         }
