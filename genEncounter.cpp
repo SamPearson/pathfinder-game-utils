@@ -1,20 +1,23 @@
 #include <iostream>
 #include <stdio.h>
+#include <vector>
 using std::string; 
 using std::cout;
 using std::endl;
 using std::cin;
 using std::cerr;
+using std::vector;
 
 #include "diceRolls.h"
 #include <mysql++.h>
+#include <mystring.h>
 #include "dbconn.h"
 #include "genEncounter.h"
 #include "menu.h"
 
 void genEncounter()
 {
-
+    encounter newEncounter;
     int targetCR=0;
     int env=0;
     int xpBudget=0;
@@ -23,12 +26,15 @@ void genEncounter()
     int pctTrap=0;
     cout << "Okay, what CR are you looking for?" << endl;
     targetCR = menuOption(8);
+    newEncounter.setCR(targetCR);
+
+/*
     cout << endl;
     cout << "Sometimes an encounter has both traps and monsters." << endl;
     cout << "Enter the % of the encounter you'd like to be monsters." << endl;
     cout << "Entering 100 will have no traps, 0 will be all traps." << endl;
     cout << "(at lower CRs you may not be able to mix and match)" << endl;
-
+*/
 
     cout <<"What environment will the encounter be in?" << endl;
     cout <<"(1) Don't care / random " << endl;
@@ -68,14 +74,56 @@ void genEncounter()
         mysqlpp::StoreQueryResult res = query.store();
         if (res)
         {
-            cout << "Results below: " << endl ;
+            vector<monster> eligibleMonsters;
+//            int givenXP;
+            mysqlpp::String dbString; 
+            string name;
+            int xp;
             mysqlpp::StoreQueryResult::const_iterator it;
             for (it=res.begin(); it != res.end(); ++it)
             {
                 mysqlpp::Row row = *it;
-                cout << '\t' << row[0] <<endl ;
+                //converting from mysqlpp string to a c++ string
+                dbString = row[0];
+                name = string(dbString.data(),dbString.length());
+                dbString = row[2];
+                xp = dbString;
+                monster freshMonster(name,xp);
+                eligibleMonsters.push_back(freshMonster);
+            }
+
+/* 
+//          Debug - if you need to see the vector's elements
+            for (int i=0; i < eligibleMonsters.size() ; i++)
+            {
+                cout << eligibleMonsters[i].getName() << endl;
 
             }
+*/
+
+            int randIndex;
+            while ( newEncounter.budgetMet() == false )
+            {
+                cout << "searching for monster" << endl ; 
+                //select from eligibleMonsters at random
+                randIndex = rand() % eligibleMonsters.size();
+                newEncounter.addMonster(eligibleMonsters[randIndex]);
+                cout << "added it" << endl; 
+                cout << "its xp was " << eligibleMonsters[randIndex].getXP() << endl ; 
+                //if we've blown the xp budget
+                if ( newEncounter.budgetBlown() )
+                {
+                    cout << "budget was blown." << endl ; 
+                    //  pop the last value off the eligibleMonsters vector
+                    newEncounter.removeLastMonster();
+                    //  trim off monsters that wont fit in the remaining xp
+                    cout << "removed the last monster" << endl ; 
+                }
+            }
+
+            cout << "Encounter built successfully. Monster list below:" << endl ; 
+            newEncounter.showMonsters();
+
         }
         else
         {

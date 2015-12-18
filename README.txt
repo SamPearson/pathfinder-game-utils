@@ -42,6 +42,7 @@ MariaDB [pf-utils-db]> describe traps;
 --------------
 
 MariaDB [pf-utils-db]> INSERT INTO traps VALUES ('Fireball Trap', 5, 1600, 28, 28);
+MariaDB [pf-utils-db]> INSERT INTO monsters VALUES ('name', cr, xp, pbonus, 'env', 'groups');
 
 -------------
 - Selecting -
